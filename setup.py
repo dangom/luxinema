@@ -16,17 +16,17 @@ REQUIRES = []
 setup(
     name='luxinema',
     version=version,
-    description='',
+    description='Retrieve cinema information for the LUX Nijmegen',
     long_description=readme,
-    author='U.N. Owen',
-    author_email='me@un.known',
-    maintainer='U.N. Owen',
-    maintainer_email='me@un.known',
-    url='https://github.com/_/luxinema',
+    author='Daniel Gomez',
+    author_email='d.gomez@posteo.org',
+    maintainer='Daniel Gomez',
+    maintainer_email='d.gomez@posteo.org',
+    url='https://github.com/dangom/luxinema',
     license='MIT/Apache-2.0',
 
     keywords=[
-        '',
+        'cinema',
     ],
 
     classifiers=[
@@ -36,7 +36,6 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
