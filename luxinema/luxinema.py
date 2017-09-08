@@ -12,11 +12,11 @@ import requests
 from bs4 import BeautifulSoup
 
 MOVIEINFO = ['Title', 'Showtime', 'Rating', 'URL', 'Description']
-LUXAPI = "https://www.lux-nijmegen.nl/?filter={date}"
+LUXAPI = "https://www.lux-nijmegen.nl/film/?filter={date}"
 IMDBAPI = 'https://www.theimdbapi.org/api/movie?movie_id={movie_id}'
 GOOGLEAPI = 'https://google.nl/search?q={query}'
 
-HEADERS = {'User-Agent': 'Magic Browser'}
+HEADERS = {'User-Agent': 'Luxinema/0.0.1 '}
 
 Movie = namedtuple('Movie', MOVIEINFO)
 
@@ -39,6 +39,15 @@ def get_tomorrow():
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
     return tomorrow.isoformat().replace('-', '')
 
+
+def get_date(year, month, day):
+    """Return arbitrary date in isoformat without hyphens.
+
+    :returns: Arbitrary date in isoformat without hyphens.
+    :rtype: String
+    """
+    return datetime.date(year, month, day).isoformat().replace('-', '')
+
 def get_movie_id(title):
     """Search google for the movie in IMDB. Look at the URL
     to retrieve the movie ID. Assumes that the first IMDB entry
@@ -50,9 +59,11 @@ def get_movie_id(title):
     """
     year = datetime.date.today().year
     query = title.replace(" ", "+") + '+imdb+' + str(year)
-    url = GOOGLEAPI.format(query=query)
-    req = requests.get(url, headers=HEADERS)
-    movie_id = re.search('imdb.com/title/(.*?)/', req.text).group(1)
+    for char in '!"#$%&\'()*,-./:;<=>?@[\\]^_`{|}~':
+        query = query.replace(char, '')
+        url = GOOGLEAPI.format(query=query)
+        req = requests.get(url, headers=HEADERS)
+        movie_id = re.search('imdb.com/title/(.*?)/', req.text).group(1)
     return movie_id
 
 
@@ -96,16 +107,21 @@ def get_lux_schedule(date=None):
 
     moviedf = pd.DataFrame(columns=MOVIEINFO)
 
-    luxrequest = requests.get(LUXAPI.format(date=date))
+    luxrequest = requests.get(LUXAPI.format(date=date), headers=HEADERS)
     soup = BeautifulSoup(luxrequest.text, 'html.parser')
-    movielist = soup.find('ul', {'class': 'items'})
-    movies = movielist.findAll('div', {'class' : 'content-wrap'})
+    # Ideally we'd query the LUXAPI passing the date and that would be it.
+    # Unfortunately, the LUX website throws all info and uses classes to hide
+    # dates outside of the filter. This means that we cannot rely on the
+    # queryurl alone, but have to double check with data-date.
+    movielist = soup.find('ul', {'class': 'items'}).findAll('li', {'data-date' : date})
+    movies = [x.find('div', {'class' : 'content-wrap'}) for x in movielist]
 
     for item in movies:
         title = item.find('h3').text
-        times = item.findAll('div', {'class': 'times'})
-        showtime = [time.find('span').text for time in times]
-
+        times = item.find('div', {'class': 'times'})
+        showtime = [time.text for time in times.findAll('span')]
+        if not showtime:
+            continue
         movie_id = get_movie_id(title)
         rating, description = get_movie_rating_and_description(movie_id)
         movie_url = get_movie_url(movie_id)
