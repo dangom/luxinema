@@ -2,9 +2,7 @@
 
 """
 import datetime
-import json
 import re
-import urllib.request
 from collections import namedtuple
 
 import pandas as pd
@@ -48,7 +46,7 @@ def get_date(year, month, day):
     """
     return datetime.date(year, month, day).isoformat().replace('-', '')
 
-def get_movie_id(title):
+def get_movie_id(title, api=GOOGLEAPI):
     """Search google for the movie in IMDB. Look at the URL
     to retrieve the movie ID. Assumes that the first IMDB entry
     that Google finds will be the movie we want.
@@ -61,9 +59,10 @@ def get_movie_id(title):
     query = title.replace(" ", "+") + '+imdb+' + str(year)
     for char in '!"#$%&\'()*,-./:;<=>?@[\\]^_`{|}~':
         query = query.replace(char, '')
-        url = GOOGLEAPI.format(query=query)
-        req = requests.get(url, headers=HEADERS)
-        movie_id = re.search('imdb.com/title/(.*?)/', req.text).group(1)
+
+    url = api.format(query=query)
+    req = requests.get(url, headers=HEADERS)
+    movie_id = re.search('imdb.com/title/(.*?)/', req.text).group(1)
     return movie_id
 
 
@@ -85,12 +84,10 @@ def get_movie_rating_and_description(movie_id):
     :returns: rating and description
     :rtype: string, string
     """
-    urlrequest = urllib.request.Request(IMDBAPI.format(movie_id=movie_id),
-                                        headers=HEADERS)
-    with urllib.request.urlopen(urlrequest) as response:
-        data = json.loads(response.read().decode())
-        rating = data['rating']
-        description = data['description']
+    data = requests.get(IMDBAPI.format(movie_id=movie_id),
+                        headers=HEADERS).json()
+    rating = data['rating']
+    description = data['description']
     return rating, description
 
 
