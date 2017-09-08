@@ -1,1 +1,4 @@
--e .
+pandas==0.20.3
+requests==2.18.4
+setuptools==36.3.0
+beautifulsoup4==4.6.0
