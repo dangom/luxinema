@@ -9,12 +9,14 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+from . import __version__
+
 MOVIEINFO = ['Title', 'Showtime', 'Rating', 'URL', 'Description']
 LUXAPI = "https://www.lux-nijmegen.nl/film/?filter={date}"
 IMDBAPI = 'https://www.theimdbapi.org/api/movie?movie_id={movie_id}'
 GOOGLEAPI = 'https://google.nl/search?q={query}'
 
-HEADERS = {'User-Agent': 'Luxinema/0.0.1 '}
+HEADERS = {'User-Agent': 'Luxinema/{version}'.format(version=__version__)}
 
 Movie = namedtuple('Movie', MOVIEINFO)
 
