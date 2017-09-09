@@ -55,6 +55,7 @@ def get_movie_id(title, api=GOOGLEAPI):
     that Google finds will be the movie we want.
 
     :param title: Title of the movie (a string)
+    :param api: URL of search engine used to retrieve movie id.
     :returns: IMDB's movie ID
     :rtype: string
     """
@@ -71,12 +72,26 @@ def get_movie_id(title, api=GOOGLEAPI):
 
 @lru_cache(maxsize=256)
 def request_imdb_json(movie_id):
+    """Query IMDB unofficial API for movie info.
+
+    :param movie_id: IMDB movie ID
+    :returns: movie data from JSON
+    :rtype: dict
+    """
     data = requests.get(IMDBAPI.format(movie_id=movie_id),
                         headers=HEADERS).json()
     return data
 
 
 def verify_movie_id(title, movie_id):
+    """Check that a movie_id truly corresponds to the movie we
+    searched for.
+
+    :param title: Title as given in the LUX schedule.
+    :param movie_id: Movie ID retrieved from Google.
+    :returns: movie id integrity
+    :rtype: boolean
+    """
     data = request_imdb_json(movie_id)
     title_id = data['title'].lower()
     name_ok = levenshtein_distance(title.lower(),
