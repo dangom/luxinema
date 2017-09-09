@@ -2,6 +2,7 @@
 
 """
 import datetime
+import functools.lru_cache
 import re
 from collections import namedtuple
 
@@ -9,14 +10,14 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-from . import __version__
+from luxinema.utils import levenshtein_distance
 
 MOVIEINFO = ['Title', 'Showtime', 'Rating', 'URL', 'Description']
 LUXAPI = "https://www.lux-nijmegen.nl/film/?filter={date}"
 IMDBAPI = 'https://www.theimdbapi.org/api/movie?movie_id={movie_id}'
 GOOGLEAPI = 'https://google.nl/search?q={query}'
 
-HEADERS = {'User-Agent': 'Luxinema/{version}'.format(version=__version__)}
+HEADERS = {'User-Agent': 'Luxinema'}
 
 Movie = namedtuple('Movie', MOVIEINFO)
 
@@ -68,6 +69,20 @@ def get_movie_id(title, api=GOOGLEAPI):
     return movie_id
 
 
+@functools.lru_cache(maxsize=256)
+def request_imdb_json(movie_id):
+    data = requests.get(IMDBAPI.format(movie_id=movie_id),
+                        headers=HEADERS).json()
+    return data
+
+
+def verify_movie_id(title, movie_id):
+    data = request_imdb_json(movie_id)
+    title_id = data['title'].lower()
+    return levenshtein_distance(title.lower(),
+                                title_id) < 3
+
+
 def get_movie_url(movie_id):
     """From a movie ID, generate it's IMDB URL.
 
@@ -86,8 +101,7 @@ def get_movie_rating_and_description(movie_id):
     :returns: rating and description
     :rtype: string, string
     """
-    data = requests.get(IMDBAPI.format(movie_id=movie_id),
-                        headers=HEADERS).json()
+    data = request_imdb_json(movie_id)
     rating = data['rating']
     description = data['description']
     return rating, description
@@ -122,8 +136,12 @@ def get_lux_schedule(date=None):
         if not showtime:
             continue
         movie_id = get_movie_id(title)
-        rating, description = get_movie_rating_and_description(movie_id)
-        movie_url = get_movie_url(movie_id)
+        if not verify_movie_id(title, movie_id):
+            rating, description, movie_url = '-', '-', '-'
+        else:
+            rating, description = get_movie_rating_and_description(movie_id)
+            movie_url = get_movie_url(movie_id)
+
         movie = Movie(title, showtime, rating, movie_url, description)
         # Append movie to pandas DataFrame
         moviedf.loc[len(moviedf)] = movie._asdict()
