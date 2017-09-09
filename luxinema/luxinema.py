@@ -2,9 +2,9 @@
 
 """
 import datetime
-import functools.lru_cache
 import re
 from collections import namedtuple
+from functools import lru_cache
 
 import pandas as pd
 import requests
@@ -69,7 +69,7 @@ def get_movie_id(title, api=GOOGLEAPI):
     return movie_id
 
 
-@functools.lru_cache(maxsize=256)
+@lru_cache(maxsize=256)
 def request_imdb_json(movie_id):
     data = requests.get(IMDBAPI.format(movie_id=movie_id),
                         headers=HEADERS).json()
@@ -79,8 +79,10 @@ def request_imdb_json(movie_id):
 def verify_movie_id(title, movie_id):
     data = request_imdb_json(movie_id)
     title_id = data['title'].lower()
-    return levenshtein_distance(title.lower(),
-                                title_id) < 3
+    name_ok = levenshtein_distance(title.lower(),
+                                   title_id) < 3
+    year_ok = int(data['release_date'][:4]) >= 2016
+    return name_ok and year_ok
 
 
 def get_movie_url(movie_id):
