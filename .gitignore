@@ -4,6 +4,7 @@
 .coverage
 .idea/
 .vscode/
+.hypothesis/
 luxinema.egg-info/
 build/
 dist/
