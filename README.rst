@@ -8,6 +8,8 @@ from the LUX cinema in Nijmegen and displays it together with IMDB Ratings.
 It is being developed more as a personal learning experience then for
 robustness.
 
+Disclaimer: I am not affiliated with the cinema in any way.
+
 .. contents:: **Table of Contents**
     :backlinks: none
 
