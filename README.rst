@@ -3,19 +3,31 @@ luxinema
 
 -----
 
+Luxinema is a small tool that grabs the movie schedule information
+from the LUX cinema in Nijmegen and displays it together with IMDB Ratings.
+
 .. contents:: **Table of Contents**
     :backlinks: none
 
 Installation
 ------------
 
-luxinema is distributed on `PyPI <https://pypi.org>`_ as a universal
-wheel and is available on Linux/macOS and Windows and supports
-Python 2.7/3.5+ and PyPy.
+luxinema supports python 3.5. The project is not yet available on PyPI.
+Either clone the project, or install it with:
 
 .. code-block:: bash
 
-    $ pip install luxinema
+    $ pip install git+https://github.com/dangom/luxinema.git
+
+Roadmap
+-------
+
+- Create a usable CLI Tool.
+- Query for specific movie.
+- Query for date range, instead of single day.
+- Add support for proper information caching (redis?).
+- Twilio to query infos per SMS.
+
 
 License
 -------
