@@ -5,6 +5,8 @@ luxinema
 
 Luxinema is a small tool that grabs the movie schedule information
 from the LUX cinema in Nijmegen and displays it together with IMDB Ratings.
+It is being developed more as a personal learning experience then for
+robustness.
 
 .. contents:: **Table of Contents**
     :backlinks: none
