@@ -43,7 +43,7 @@ setup(
     ],
 
     install_requires=REQUIRES,
-    tests_require=['coverage', 'pytest'],
+    tests_require=['coverage', 'pytest', 'hypothesis'],
 
     packages=find_packages(),
 )
