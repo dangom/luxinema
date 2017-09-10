@@ -1,6 +1,10 @@
-"""A personal web scrapper to gather LUX Cinema's schedule.
+#!/usr/bin/env python3
 
 """
+A personal web scrapper to gather LUX Cinema's schedule.
+"""
+
+import argparse
 import datetime
 import re
 from collections import namedtuple
@@ -10,10 +14,10 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-from luxinema.utils import levenshtein_distance
 from tabulate import tabulate
 
 from . import __version__
+from .utils import levenshtein_distance
 
 MOVIEINFO = ['Title', 'Showtime', 'Rating', 'URL', 'Description']
 LUXAPI = "https://www.lux-nijmegen.nl/film/?filter={date}"
@@ -186,3 +190,22 @@ def print_best_rated(moviedf, howmany=1):
 
 def print_schedule(moviedf):
     print(tabulate(moviedf[['Title', 'Rating', 'Showtime']]))
+
+
+# TODO: To be finished
+def get_cli_parser():
+    parser = argparse.ArgumentParser(description='LUX schedule via the command line')
+    parser.add_argument('date', metavar='DATE', type=str, default=get_today(),
+                        help='Insert date in isoformat(YYYY-MM-DD) or simply DD')
+    parser.add_argument('-b', '--best', help='display only the 3 best movies of the day',
+                        action='store_true')
+    parser.add_argument('-v', '--version', help='displays the current version of luxinema',
+                        action='store_true')
+    return parser
+
+# TODO: To be finished
+def run_luxinema():
+    print_schedule(get_lux_schedule(get_tomorrow()))
+
+if __name__ == '__main__':
+    run_luxinema()

@@ -32,16 +32,20 @@ setup(
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
+        'Environment :: Console',
         'License :: OSI Approved :: MIT License',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
-        'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
-
+    entry_points={
+        'console_scripts': [
+            'luxinema = luxinema.luxinema:run_luxinema',
+        ]
+    },
     install_requires=REQUIRES,
     tests_require=['coverage', 'pytest', 'hypothesis'],
 
