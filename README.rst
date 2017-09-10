@@ -29,7 +29,7 @@ Roadmap
 - Create a usable CLI Tool.
 - Query for specific movie.
 - Query for date range, instead of single day.
-- Add support for proper information caching (redis?).
+- Add support for proper caching (redis? Interesting, but easier and simpler with requests_cache).
 - Twilio to query infos per SMS.
 
 
