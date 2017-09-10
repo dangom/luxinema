@@ -11,13 +11,16 @@ import requests
 from bs4 import BeautifulSoup
 
 from luxinema.utils import levenshtein_distance
+from tabulate import tabulate
+
+from . import __version__
 
 MOVIEINFO = ['Title', 'Showtime', 'Rating', 'URL', 'Description']
 LUXAPI = "https://www.lux-nijmegen.nl/film/?filter={date}"
 IMDBAPI = 'https://www.theimdbapi.org/api/movie?movie_id={movie_id}'
 GOOGLEAPI = 'https://google.nl/search?q={query}'
 
-HEADERS = {'User-Agent': 'Luxinema'}
+HEADERS = {'User-Agent': 'Luxinema/{v}'.format(v=__version__)}
 
 Movie = namedtuple('Movie', MOVIEINFO)
 
@@ -127,7 +130,8 @@ def get_movie_rating_and_description(movie_id):
     description = data['description']
     return rating, description
 
-
+# TODO: refactor so that movie info requests are send in parallel.
+# TODO: figure out how to persist information across sessions.
 def get_lux_schedule(date=None):
     """Get LUX schedule for date. Returns a DataFrame, sorted by rating,
     of all movies still available to be seen.
@@ -168,3 +172,17 @@ def get_lux_schedule(date=None):
         moviedf.loc[len(moviedf)] = movie._asdict()
 
     return moviedf.sort_values('Rating', ascending=False).reset_index(drop=True)
+
+
+def print_best_rated(moviedf, howmany=1):
+    template = "The LUX is showing {title} (IMDB rating: {rating}) at {showtime}."
+    for index in range(0, howmany):
+        movie = moviedf.loc[index]
+        showtime = " and at ".join(movie['Showtime'])
+        print(template.format(title=movie['Title'],
+                              rating=movie['Rating'],
+                              showtime=showtime))
+
+
+def print_schedule(moviedf):
+    print(tabulate(moviedf[['Title', 'Rating', 'Showtime']]))
