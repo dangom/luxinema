@@ -96,7 +96,11 @@ def verify_movie_id(title, movie_id):
     title_id = data['title'].lower()
     name_ok = levenshtein_distance(title.lower(),
                                    title_id) < 3
-    year_ok = int(data['release_date'][:4]) >= 2016
+    release_year = data['release_date'][:4]
+    if release_year:
+        year_ok = int(release_year) >= 2016
+    else:
+        year_ok = True
     return name_ok and year_ok
 
 
