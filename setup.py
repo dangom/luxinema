@@ -11,7 +11,8 @@ with open('luxinema/__init__.py', 'r') as f:
 with open('README.rst', 'rb') as f:
     readme = f.read().decode('utf-8')
 
-REQUIRES = ['pandas', 'requests', 'setuptools', 'beautifulsoup4', 'tabulate']
+REQUIRES = ['pandas', 'requests', 'requests_cache',
+            'setuptools', 'beautifulsoup4', 'tabulate']
 
 setup(
     name='luxinema',
