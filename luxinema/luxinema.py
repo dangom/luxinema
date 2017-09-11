@@ -228,7 +228,7 @@ def get_cli_parser():
 # TODO: To be finished
 def run_luxinema():
     _enable_cache()
-    print_schedule(get_lux_schedule(get_tomorrow()))
+    print_schedule(get_lux_schedule(get_today()))
 
 
 if __name__ == '__main__':
