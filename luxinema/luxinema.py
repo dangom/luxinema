@@ -6,12 +6,15 @@ A personal web scrapper to gather LUX Cinema's schedule.
 
 import argparse
 import datetime
+import glob
+import os
 import re
 from collections import namedtuple
 from functools import lru_cache
 
 import pandas as pd
 import requests
+import requests_cache
 from bs4 import BeautifulSoup
 
 from tabulate import tabulate
@@ -26,7 +29,25 @@ GOOGLEAPI = 'https://google.nl/search?q={query}'
 
 HEADERS = {'User-Agent': 'Luxinema/{v}'.format(v=__version__)}
 
+XDG_CACHE_DIR = os.environ.get('XDG_CACHE_HOME',
+                               os.path.join(os.path.expanduser('~'), '.cache'))
+CACHE_DIR = os.path.join(XDG_CACHE_DIR, 'luxinema')
+CACHE_FILE = os.path.join(CACHE_DIR, 'cache')
+
 Movie = namedtuple('Movie', MOVIEINFO)
+
+
+# Solution taken  from https://github.com/gleitz/howdoi/
+def _enable_cache():
+    if not os.path.exists(CACHE_DIR):
+        os.makedirs(CACHE_DIR)
+    requests_cache.install_cache(CACHE_FILE)
+
+
+def _clear_cache():
+    for cache in glob.glob('{0}*'.format(CACHE_FILE)):
+        os.remove(cache)
+
 
 def get_today():
     """Return today's date in isoformat without hyphens.
@@ -203,9 +224,12 @@ def get_cli_parser():
                         action='store_true')
     return parser
 
+
 # TODO: To be finished
 def run_luxinema():
+    _enable_cache()
     print_schedule(get_lux_schedule(get_tomorrow()))
+
 
 if __name__ == '__main__':
     run_luxinema()
