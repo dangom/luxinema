@@ -77,6 +77,7 @@ def get_date(year, month, day):
     """
     return datetime.date(year, month, day).isoformat().replace('-', '')
 
+
 def get_movie_id(title, api=GOOGLEAPI):
     """Search google for the movie in IMDB. Look at the URL
     to retrieve the movie ID. Assumes that the first IMDB entry
@@ -155,6 +156,7 @@ def get_movie_rating_and_description(movie_id):
     description = data['description']
     return rating, description
 
+
 # TODO: refactor so that movie info requests are send in parallel.
 # TODO: figure out how to persist information across sessions.
 def get_lux_schedule(date=None):
@@ -176,8 +178,10 @@ def get_lux_schedule(date=None):
     # Unfortunately, the LUX website throws all info and uses classes to hide
     # dates outside of the filter. This means that we cannot rely on the
     # queryurl alone, but have to double check with data-date.
-    movielist = soup.find('ul', {'class': 'items'}).findAll('li', {'data-date' : date})
-    movies = [x.find('div', {'class' : 'content-wrap'}) for x in movielist]
+    movielist = soup.find('ul',
+                          {'class': 'items'}).findAll('li',
+                                                      {'data-date': date})
+    movies = [x.find('div', {'class': 'content-wrap'}) for x in movielist]
 
     for item in movies:
         title = item.find('h3').text
