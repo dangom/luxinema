@@ -2,6 +2,7 @@
 
 """
 A personal web scrapper to gather LUX Cinema's schedule.
+Written by Daniel Gomez (d.gomez@posteo.org)
 """
 
 import argparse
@@ -233,6 +234,7 @@ def get_cli_parser():
 def run_luxinema():
     _enable_cache()
     print_schedule(get_lux_schedule(get_today()))
+
 
 
 if __name__ == '__main__':
