@@ -16,12 +16,20 @@ Disclaimer: I am not affiliated with the cinema in any way.
 Installation
 ------------
 
-luxinema supports python 3.5. The project is not yet available on PyPI.
+luxinema supports python 3.5 and 3.6.
 Either clone the project, or install it with:
 
 .. code-block:: bash
 
     $ pip install git+https://github.com/dangom/luxinema.git
+
+Usage
+-------
+After installation, running :code:`luxinema` will display the LUX schedule for the current day.
+That is currently the only functionality implemented. When running for the first time,
+the program may take about 15 seconds to show results, because it has to create a cache
+and request the IMDB information for each movie.
+
 
 Roadmap
 -------
