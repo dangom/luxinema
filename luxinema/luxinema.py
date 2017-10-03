@@ -15,9 +15,9 @@ from functools import lru_cache
 
 import pandas as pd
 import requests
-import requests_cache
 from bs4 import BeautifulSoup
 
+import requests_cache
 from tabulate import tabulate
 
 from . import __version__
@@ -225,17 +225,24 @@ def get_cli_parser():
                         help='Insert date in isoformat(YYYY-MM-DD) or simply DD')
     parser.add_argument('-b', '--best', help='display only the 3 best movies of the day',
                         action='store_true')
+    parser.add_argument('-t', '--tomorrow', help='display schedule for tomorrow')
     parser.add_argument('-v', '--version', help='displays the current version of luxinema',
                         action='store_true')
     return parser
 
 
 # TODO: To be finished
-def run_luxinema():
+def run_luxinema(date=get_today()):
     _enable_cache()
-    print_schedule(get_lux_schedule(get_today()))
+    print_schedule(get_lux_schedule(date))
 
 
 
 if __name__ == '__main__':
-    run_luxinema()
+    parser = get_cli_parser()
+    args = vars(parser.parse_args())
+
+    if args['tomorrow']:
+        run_luxinema(get_tomorrow())
+    else:
+        run_luxinema()
