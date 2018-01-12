@@ -12,12 +12,12 @@ import os
 import re
 from collections import namedtuple
 from functools import lru_cache
+from json import JSONDecodeError
 
 import pandas as pd
 import requests
-from bs4 import BeautifulSoup
-
 import requests_cache
+from bs4 import BeautifulSoup
 from tabulate import tabulate
 
 from . import __version__
@@ -25,7 +25,8 @@ from .utils import levenshtein_distance
 
 MOVIEINFO = ['Title', 'Showtime', 'Rating', 'URL', 'Description']
 LUXAPI = "https://www.lux-nijmegen.nl/film/?filter={date}"
-IMDBAPI = 'https://www.theimdbapi.org/api/movie?movie_id={movie_id}'
+# IMDBAPI = 'https://www.theimdbapi.org/api/movie?movie_id={movie_id}'
+IMDBAPI = 'https://www.omdbapi.com/?i={movie_id}&apikey=***REMOVED***'
 GOOGLEAPI = 'https://google.nl/search?q={query}'
 
 HEADERS = {'User-Agent': 'Luxinema/{v}'.format(v=__version__)}
@@ -108,8 +109,11 @@ def request_imdb_json(movie_id):
     :returns: movie data from JSON
     :rtype: dict
     """
-    data = requests.get(IMDBAPI.format(movie_id=movie_id),
-                        headers=HEADERS).json()
+    try:
+        data = requests.get(IMDBAPI.format(movie_id=movie_id),
+                            headers=HEADERS).json()
+    except JSONDecodeError:
+        data = {'Response': 'False'}
     return data
 
 
@@ -123,10 +127,12 @@ def verify_movie_id(title, movie_id):
     :rtype: boolean
     """
     data = request_imdb_json(movie_id)
-    title_id = data['title'].lower()
+    if data['Response'] == 'False':
+        return False
+    title_id = data['Title'].lower()
     name_ok = levenshtein_distance(title.lower(),
                                    title_id) < 3
-    release_year = data['release_date'][:4]
+    release_year = data['Released'][-4:]
     if release_year:
         year_ok = int(release_year) >= 2016
     else:
@@ -153,8 +159,8 @@ def get_movie_rating_and_description(movie_id):
     :rtype: string, string
     """
     data = request_imdb_json(movie_id)
-    rating = data['rating']
-    description = data['description']
+    rating = data['imdbRating']
+    description = data['Plot']
     return rating, description
 
 
@@ -172,7 +178,6 @@ def get_lux_schedule(date=None):
         date = get_today()
 
     moviedf = pd.DataFrame(columns=MOVIEINFO)
-
     luxrequest = requests.get(LUXAPI.format(date=date), headers=HEADERS)
     soup = BeautifulSoup(luxrequest.text, 'html.parser')
     # Ideally we'd query the LUXAPI passing the date and that would be it.
