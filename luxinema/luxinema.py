@@ -134,7 +134,10 @@ def verify_movie_id(title, movie_id):
                                    title_id) < 3
     release_year = data['Released'][-4:]
     if release_year:
-        year_ok = int(release_year) >= 2016
+        try:
+            year_ok = int(release_year) >= 2016
+        except ValueError:
+            year_ok = True
     else:
         year_ok = True
     return name_ok and year_ok
