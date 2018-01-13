@@ -23,6 +23,13 @@ Either clone the project, or install it with:
 
     $ pip install git+https://github.com/dangom/luxinema.git
 
+After installation, you'll need to generate an API key to access the `OMDB API <https://www.omdbapi.com/>`_ and write it as a JSON entry into a file called .luxinema in your home directory. Example *.luxinema* file content:
+
+.. code-block:: json
+
+    {"apikey": "01234567"}
+
+
 Usage
 -------
 After installation, running :code:`luxinema` will display the LUX schedule for the current day.

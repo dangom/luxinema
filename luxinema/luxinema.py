@@ -8,11 +8,11 @@ Written by Daniel Gomez (d.gomez@posteo.org)
 import argparse
 import datetime
 import glob
+import json
 import os
 import re
 from collections import namedtuple
 from functools import lru_cache
-from json import JSONDecodeError
 
 import pandas as pd
 import requests
@@ -23,10 +23,12 @@ from tabulate import tabulate
 from . import __version__
 from .utils import levenshtein_distance
 
+APIDATA = json.load(open(os.path.join(os.path.expanduser('~'),
+                                      '.luxinema')))
+APIKEY = APIDATA['apikey']
 MOVIEINFO = ['Title', 'Showtime', 'Rating', 'URL', 'Description']
 LUXAPI = "https://www.lux-nijmegen.nl/film/?filter={date}"
-# IMDBAPI = 'https://www.theimdbapi.org/api/movie?movie_id={movie_id}'
-IMDBAPI = 'https://www.omdbapi.com/?i={movie_id}&apikey=***REMOVED***'
+IMDBAPI = 'https://www.omdbapi.com/?i={movie_id}&apikey=' + APIKEY
 GOOGLEAPI = 'https://google.nl/search?q={query}'
 
 HEADERS = {'User-Agent': 'Luxinema/{v}'.format(v=__version__)}
@@ -112,7 +114,7 @@ def request_imdb_json(movie_id):
     try:
         data = requests.get(IMDBAPI.format(movie_id=movie_id),
                             headers=HEADERS).json()
-    except JSONDecodeError:
+    except json.JSONDecodeError:
         data = {'Response': 'False'}
     return data
 
