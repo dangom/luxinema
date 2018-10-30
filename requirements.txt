@@ -11,7 +11,7 @@ pandas == 0.22.0
 
 # build/lib/luxinema/luxinema.py: 18
 # luxinema/luxinema.py: 18
-requests == 2.18.4
+requests >= 2.20
 
 # build/lib/luxinema/luxinema.py: 19
 # luxinema/luxinema.py: 19

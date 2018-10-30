@@ -242,10 +242,9 @@ def get_cli_parser():
 
 
 # TODO: To be finished
-def run_luxinema(date=get_today()):
+def run_luxinema(date=get_tomorrow()):
     _enable_cache()
     print_schedule(get_lux_schedule(date))
-
 
 
 if __name__ == '__main__':
