@@ -18,7 +18,7 @@ requests >= 2.20
 requests_cache == 0.4.13
 
 # setup.py: 1
-setuptools == 38.2.4
+setuptools == 65.5.1
 
 # build/lib/luxinema/luxinema.py: 21
 # luxinema/luxinema.py: 21
